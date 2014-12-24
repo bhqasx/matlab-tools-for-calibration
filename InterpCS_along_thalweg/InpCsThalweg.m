@@ -106,6 +106,35 @@ end
 tri=delaunay(data_xy(:,1),data_xy(:,2));
 trisurf(tri,data_xy(:,1),data_xy(:,2),data_val);
 
+fclose(file_id);
+%-------------------------------------输出结果---------------------------------------
+file_id=fopen('CS_interplated.dat', 'w');
+fprintf(file_id,'%s\n','断面地形输入');
+fprintf(file_id,'%d\n',2*ncs-1);
+for ii=1:1:2*ncs-1
+    fprintf(file_id,'%s\n',['CS',num2str(ii)]);
+    fprintf(file_id,'%s\t%s\n', '100', '100');
+    fprintf(file_id,'%d\t%d\n', CSnew(ii).nodes, 100);
+    fprintf(file_id,'%s\t%s\n', '100', '100');
+    
+    for jj=1:1:CSnew(ii).nodes
+        if jj==1
+            rgh=1;              %糙率
+        elseif jj==CSnew(ii).nodes
+            rgh=1;
+        else
+            rgh=0;
+        end
+        fprintf(file_id,'%3d\t%7.2f\t%7.2f\t   %1d\n', jj, CSnew(ii).x(jj), CSnew(ii).zb(jj), rgh);
+    end
+end
 
+fprintf(file_id, '%s\n', '各断面沿程距离');
+fprintf(file_id, '%s\n', 'i      DistLg(i)');
+for ii=1:1:2*ncs-1
+    fprintf(file_id, '%3d\t%6.3f\n', ii, CSnew(ii).dist/1000);                         %沿程距离
+end
+
+fclose(file_id);
 
 
