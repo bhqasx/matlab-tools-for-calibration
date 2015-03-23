@@ -1,5 +1,7 @@
 % Code for 2-nd order Godunov type scheme for 1D shallow water 
+%test parfor
 
+matlabpool('open','local',4);        
 global dx;
 global zb;
 global L;
@@ -52,9 +54,12 @@ while t<tout
     UeR=LR(2,U);
     UeR(:,end)=UeL(:,end);      
     zb_diag=diag(0.5*ones(1,M))+diag(0.5*ones(1,M-1),1);
-    zbf=(zb_diag*zb.').';
+    zbf=(zb_diag*zb.').';      %zb at each cell's east face
     zbf(1,end)=zb(1,end);            
-    Fe=F_cal(UeL,UeR,zbf);
+    
+    parfor i=1:M
+        Fe(:,i)=F_cal(UeL(:,i),UeR(:,i),zbf(i));
+    end
     Fw=circshift(Fe,[0,1]);
     switch ncase
         case 1
@@ -93,7 +98,9 @@ while t<tout
     UeL=LR(1,Um);
     UeR=LR(2,Um);
     UeR(:,end)=UeL(:,end);
-    Fe=F_cal(UeL,UeR,zbf);
+    parfor i=1:M
+        Fe(:,i)=F_cal(UeL(:,i),UeR(:,i),zbf(i));
+    end
     Fw=circshift(Fe,[0,1]);
     switch ncase
         case 1
@@ -140,6 +147,8 @@ while t<tout
     pause(0.01);
 
 end
+
+matlabpool close;       %close parallel tool
         
     
     
