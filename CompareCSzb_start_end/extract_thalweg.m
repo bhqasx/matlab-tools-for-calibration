@@ -1,3 +1,4 @@
+function [dist,zbed]=extract_thalweg(handles)
 %画纵剖面
 button=questdlg('请地形文件','Guide','Yes');
 if ~strcmp(button,'Yes')
@@ -33,5 +34,15 @@ if file_id>=3
         CS_array(i).zbmin=zbmin(i);  %lowest level of a cross-section
     end
     
+    tline=fgetl(file_id);
+    tline=fgetl(file_id);
+    for i=1:1:ncs
+        tline=fgetl(file_id);
+        a=textscan(tline,'%f');         %distance of each cross-section
+        CS_array(i).dist=a{1}(1);
+    end
+    
+    dist=arrayfun(@(x)x.dist,CS_array);
+    zbed=arrayfun(@(x)x.zbmin,CS_array);         %operation to structure array
     fclose(file_id);
 end

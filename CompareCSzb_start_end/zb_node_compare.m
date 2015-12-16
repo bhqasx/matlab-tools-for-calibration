@@ -95,8 +95,10 @@ global CS_af;         %cross-sections after flood
 handles.ics=round(get(hObject,'Value'));
 if get(handles.checkbox_AfterFlood,'Value')
     plotCS(CS(handles.ics),CS_af(handles.ics));
+    grid on;
 else
     plotCS(CS(handles.ics));
+    grid on;
 end
 set(handles.text1,'String',['CS', num2str(handles.ics)]);
 guidata(hObject, handles);    %the ics field is added to handles, so this line is needed
@@ -147,6 +149,8 @@ global CS;
 global CS_af;
 if get(hObject,'Value')
     plotCS(CS(handles.ics),CS_af(handles.ics));
+    grid on;
 else
     plotCS(CS(handles.ics));
+    grid on;
 end
