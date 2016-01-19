@@ -2,7 +2,15 @@ function handles=CsCompare_initiate(handles)
 %compare the initial and final profile of each cross-section
 global CS;
 global CS_af;         %cross-sections after flood
-file_id=fopen(['CSZBnd.TXT']);
+
+%----------读取第一个地形文件，格式需符合fortran模型输出的CSZBnd.TXT---------
+button=questdlg('请选择地形文件','Guide','Yes');
+if ~strcmp(button,'Yes')
+    return;
+end
+filename=uigetfile;
+file_id=fopen(filename);
+
 tline=fgetl(file_id);
 tline=fgetl(file_id);
 a=textscan(tline,'%s%f');
@@ -40,6 +48,7 @@ end
         
 fclose(file_id);
 
+%---------------------------------读取第二个地形文件-------------------------------
 file_id=fopen(['AfterFlood.TXT']);
 if file_id>=3
     set(handles.checkbox_AfterFlood,'Enable','on');
@@ -62,12 +71,14 @@ if file_id>=3
         CS_af(ireverse).npt=tmp;  
         CS_af(ireverse).x=zeros(tmp,1);
         CS_af(ireverse).zb=zeros(tmp,1);
+        CS_af(ireverse).chfp=zeros(tmp,1);
         tline=fgetl(file_id);
         for j=1:1:CS_af(ireverse).npt
             tline=fgetl(file_id);
             a=textscan(tline,'%f');  
             CS_af(ireverse).x(j)=a{1}(2);
             CS_af(ireverse).zb(j)=a{1}(3);
+            CS_af(ireverse).chfp(j)=a{1}(4);
         end
     end
     fclose(file_id);

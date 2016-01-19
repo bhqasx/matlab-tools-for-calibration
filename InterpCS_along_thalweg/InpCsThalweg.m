@@ -103,7 +103,7 @@ for ii=1:1:2*ncs-1
     count=count+CSnew(ii).nodes;
 end
 
-tri=delaunay(data_xy(:,1),data_xy(:,2));
+tri=delaunay(data_xy(:,1),data_xy(:,2));        %生成三角网格
 trisurf(tri,data_xy(:,1),data_xy(:,2),data_val);
 
 fclose(file_id);

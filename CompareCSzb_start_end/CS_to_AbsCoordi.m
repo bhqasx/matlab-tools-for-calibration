@@ -17,6 +17,7 @@ cs_dist=zeros(ncs,1);
 a=cell(1,ncs);
 CSold=struct('nodes',a,'xy',a,'zb',a,'min_xy',a,'min_idx',a);
 
+total_nodes=0;
 for ii=1:1:ncs
     tline=fgetl(file_id);
     tline=fgetl(file_id);
@@ -24,6 +25,7 @@ for ii=1:1:ncs
     CSold(ii).nodes=rt{1}(1);       %断面上的测点数    
     CSold(ii).xy=zeros(CSold(ii).nodes,2);          %断面上测点的坐标
     CSold(ii).zb=zeros(CSold(ii).nodes,1);   
+    total_nodes=total_nodes+CSold(ii).nodes;       %总数据点数
     
     tline=fgetl(file_id);
     rt=textscan(tline,'%f');
@@ -54,7 +56,8 @@ for ii=1:1:ncs
 end
 
 %-------用一组三维曲线画出来-------
- file_id=fopen('CS_xyz.txt', 'w');
+figure;
+file_id=fopen('CS_xyz.txt', 'w');
  for ii=1:1:ncs
      plot3(CSold(ii).xy(:,1),CSold(ii).xy(:,2),CSold(ii).zb,'b-d');
      hold on;
@@ -65,5 +68,26 @@ end
  end
  hold off;   
  line(thalweg(:,1),thalweg(:,2),thalweg(:,3));        %画出深泓线
- fclose(file_id);   
+ fclose(file_id); 
+ 
+ %-----------------用曲面画出来----------------
+ uorder=input('need to see surf plot? y/n\n', 's');
+ if strcmp(uorder,'y')
+     data_xy=zeros(total_nodes,2);
+     data_val=zeros(total_nodes,1);
+
+     file_id=fopen('CS_xyz.txt', 'r');
+     for ii=1:1:total_nodes
+         tline=fgetl(file_id);
+         rt=textscan(tline,'%f');
+         data_xy(ii,1)=rt{1}(1);
+         data_xy(ii,2)=rt{1}(2);
+         data_val(ii)=rt{1}(3);
+     end 
+     fclose(file_id);
+     
+     tri=delaunay(data_xy(:,1),data_xy(:,2));        %生成三角网格
+     trisurf(tri,data_xy(:,1),data_xy(:,2),data_val);
+ end
+ 
     

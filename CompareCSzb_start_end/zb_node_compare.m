@@ -22,7 +22,7 @@ function varargout = zb_node_compare(varargin)
 
 % Edit the above text to modify the response to help zb_node_compare
 
-% Last Modified by GUIDE v2.5 21-Jun-2015 18:44:09
+% Last Modified by GUIDE v2.5 15-Jan-2016 21:32:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -154,3 +154,36 @@ else
     plotCS(CS(handles.ics));
     grid on;
 end
+
+
+% --------------------------------------------------------------------
+function File_Callback(hObject, eventdata, handles)
+% hObject    handle to File (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function ExpToTxt_Callback(hObject, eventdata, handles)
+% hObject    handle to ExpToTxt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%export cs data to txt file
+global CS_af;
+
+ncs=size(CS_af,2);
+fid = fopen('ExportedCS.txt', 'w');
+fprintf(fid,'xxxxxx\n');
+fprintf(fid,'%d     总断面数\n', ncs);
+for i=1:1:ncs
+    fprintf(fid,'CS%2d(HH%2d)\n',i,1+ncs-i);
+    fprintf(fid,'xxxxxx\n');
+    fprintf(fid,'%d        xxx\n',CS_af(i).npt);
+    fprintf(fid,'序号       起点距       高程\n');
+    for j=1:1:CS_af(i).npt
+        fprintf(fid,'%d     %.3f      %.3f      %d\n', j, CS_af(i).x(j), CS_af(i).zb(j), CS_af(i).chfp(j));                
+    end
+end
+
+fclose(fid);
