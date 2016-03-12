@@ -9,8 +9,9 @@ file_id=fopen(filename);
 
 if file_id>=3
     tline=fgetl(file_id);
-    a=textscan(tline,'%s%f');
-    ncs=a{2}(1);          %get the number of cross-sections
+    tline=fgetl(file_id);
+    a=textscan(tline,'%f');
+    ncs=a{1}(1);          %get the number of cross-sections
     zbmin=zeros(ncs,1);
     b=cell(1,ncs);
     CS_array=struct('npt',b,'x',b,'zb',b);       %creat a struct array

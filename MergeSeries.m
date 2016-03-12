@@ -56,6 +56,6 @@ end
 
 %to fill the rest cells of y32, use:
 %y32=interp_qs(x3,y32);
-%note the first element of y32 should not be 0 when use interp_qs
+%note the first and last element of y32 should not be 0 when use interp_qs
 
            
