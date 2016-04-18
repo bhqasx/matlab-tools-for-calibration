@@ -27,6 +27,7 @@ if file_id>=3
             CS_array(i).zb(j)=a{1}(3);
             CS_array(i).kchfp(j)=a{1}(4);
         end
+        CS_array(i).zbmin=min(CS_array(i).zb);  %lowest level of a cross-section
     end
     fclose(file_id);
 end

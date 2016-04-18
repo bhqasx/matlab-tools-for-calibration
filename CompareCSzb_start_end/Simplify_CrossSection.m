@@ -72,6 +72,7 @@ handles.ics=round(get(handles.slider1,'Value'));        %set the current CS as 1
 plot(CS_original(handles.ics).x,CS_original(handles.ics).zb,'bo-');
 grid on;
 set(handles.text1,'String',['CS', num2str(handles.ics)]);
+handles.cs_shape='Rectangle';         %default shape after transformaton
 %------------------------------my codes end----------------------
 
 % Choose default command line output for Simplify_CrossSection
@@ -104,10 +105,20 @@ function slider1_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 global CS_original;
+global CS_simplified;
 
 handles.ics=round(get(hObject,'Value'));
 plot(CS_original(handles.ics).x,CS_original(handles.ics).zb,'bo-');
 grid on;
+
+if isfield(CS_simplified(handles.ics), 'changed')
+    if CS_simplified(handles.ics).changed==1
+        hold on;
+        plot(CS_simplified(handles.ics).x,CS_simplified(handles.ics).zb,'ro-');
+        hold off;
+    end
+end
+
 set(handles.text1,'String',['CS', num2str(handles.ics)]);
 guidata(hObject, handles);    %the ics field is added to handles, so this line is needed
 
@@ -138,19 +149,19 @@ function ExpToTxt_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 %export cs data to txt file
-global CS_af;
+global CS_simplified;
 
-ncs=size(CS_af,2);
+ncs=size(CS_simplified,2);
 fid = fopen('ExportedCS.txt', 'w');
 fprintf(fid,'xxxxxx\n');
 fprintf(fid,'%d     总断面数\n', ncs);
 for i=1:1:ncs
     fprintf(fid,'CS%2d(HH%2d)\n',i,1+ncs-i);
     fprintf(fid,'xxxxxx\n');
-    fprintf(fid,'%d        xxx\n',CS_af(i).npt);
+    fprintf(fid,'%d        xxx\n',CS_simplified(i).npt);
     fprintf(fid,'序号       起点距       高程\n');
-    for j=1:1:CS_af(i).npt
-        fprintf(fid,'%d     %.3f      %.3f      %d\n', j, CS_af(i).x(j), CS_af(i).zb(j), CS_af(i).chfp(j));                
+    for j=1:1:CS_simplified(i).npt
+        fprintf(fid,'%d     %.3f      %.3f      %d\n', j, CS_simplified(i).x(j), CS_simplified(i).zb(j), CS_simplified(i).kchfp(j));                
     end
 end
 
@@ -223,12 +234,32 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global CS_original;
 global CS_simplified;
-[area,width]=get_area(CS_original(handles.ics),handles.zw_design);
+
+CS1=CS_simplified(handles.ics);
+[area,width]=get_area(CS1,handles.zw_design);
+h=handles.zw_design-CS1.zbmin;       %depth under given water level
+width2=area/h;
+npt=CS1.npt;
+xmid=(CS1.x(npt)-CS1.x(1))/2;
+zbmax=max(CS1.zb);
 if strcmp(handles.cs_shape,'Rectangle')
-    
+    for i=1:1:npt
+        if abs(CS1.x(i)-xmid)<=width2/2
+            CS1.zb(i)=CS1.zbmin;
+        else
+            CS1.zb(i)=zbmax;
+        end
+    end
 elseif strcmp(handles.cs_shape,'Triangle')
     
 end
+
+%update new CS data
+CS_simplified(handles.ics)=CS1;
+CS_simplified(handles.ics).changed=1;
+
+hold on;
+plot(CS_simplified(handles.ics).x,CS_simplified(handles.ics).zb,'ro-');
+hold off;
     
