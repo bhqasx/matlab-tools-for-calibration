@@ -239,11 +239,11 @@ global CS_simplified;
 CS1=CS_simplified(handles.ics);
 [area,width]=get_area(CS1,handles.zw_design);
 h=handles.zw_design-CS1.zbmin;       %depth under given water level
-width2=area/h;
 npt=CS1.npt;
 xmid=(CS1.x(npt)-CS1.x(1))/2;
 zbmax=max(CS1.zb);
 if strcmp(handles.cs_shape,'Rectangle')
+    width2=area/h;
     for i=1:1:npt
         if abs(CS1.x(i)-xmid)<=width2/2
             CS1.zb(i)=CS1.zbmin;
@@ -252,7 +252,25 @@ if strcmp(handles.cs_shape,'Rectangle')
         end
     end
 elseif strcmp(handles.cs_shape,'Triangle')
+    width2=2*area/h;
+    tan_la=2*h/width2;                            %lateral slope of river bed
+    CS1.npt=5;                      %ensure npt is an odd number
+    CS1.x=zeros(1,CS1.npt);
+    CS1.zb=zeros(1,CS1.npt);
+    CS1.kchfp=zeros(1,CS1.npt);
+    imid=1+floor(CS1.npt/2);
     
+    CS1.x(imid)=xmid;
+    CS1.zb(imid)=CS1.zbmin;
+    for i=1:1:(CS1.npt-1)/2
+        CS1.x(imid-i)=CS1.x(imid)-i*width2/2;
+        CS1.x(imid+i)=CS1.x(imid)+i*width2/2;
+        
+        CS1.zb(imid-i)=CS1.zbmin+abs(CS1.x(imid-i)-CS1.x(imid))*tan_la;
+        CS1.zb(imid+i)=CS1.zbmin+abs(CS1.x(imid+i)-CS1.x(imid))*tan_la;
+    end
+    CS1.kchfp(1)=1;
+    CS1.kchfp(CS1.npt)=1;
 end
 
 %update new CS data
