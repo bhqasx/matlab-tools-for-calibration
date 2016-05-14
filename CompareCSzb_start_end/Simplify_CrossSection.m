@@ -22,7 +22,7 @@ function varargout = Simplify_CrossSection(varargin)
 
 % Edit the above text to modify the response to help Simplify_CrossSection
 
-% Last Modified by GUIDE v2.5 13-Apr-2016 18:03:12
+% Last Modified by GUIDE v2.5 14-May-2016 20:07:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -188,6 +188,7 @@ function Rectangle_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.Triangle,'Checked','off');
+set(handles.Trapezoid,'Checked','off');
 set(hObject,'Checked','on');
 handles.cs_shape='Rectangle';
 guidata(hObject, handles);        %update user data in handles
@@ -199,6 +200,7 @@ function Triangle_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.Rectangle,'Checked','off');
+set(handles.Trapezoid,'Checked','off');
 set(hObject,'Checked','on');
 handles.cs_shape='Triangle';
 guidata(hObject, handles); 
@@ -240,7 +242,7 @@ CS1=CS_simplified(handles.ics);
 [area,width]=get_area(CS1,handles.zw_design);
 h=handles.zw_design-CS1.zbmin;       %depth under given water level
 npt=CS1.npt;
-xmid=(CS1.x(npt)-CS1.x(1))/2;
+xmid=(CS1.x(npt)+CS1.x(1))/2;
 zbmax=max(CS1.zb);
 if strcmp(handles.cs_shape,'Rectangle')
     width2=area/h;
@@ -271,6 +273,32 @@ elseif strcmp(handles.cs_shape,'Triangle')
     end
     CS1.kchfp(1)=1;
     CS1.kchfp(CS1.npt)=1;
+elseif strcmp(handles.cs_shape,'Trapezoid')
+    tan_la=1;           %%lateral slope of river bed
+    b_bottom=area/h-h/tan_la;           %bottom width
+    CS1.npt=7;
+    CS1.x=zeros(1,CS1.npt);
+    CS1.zb=zeros(1,CS1.npt);
+    CS1.kchfp=zeros(1,CS1.npt);
+    imid=1+floor(CS1.npt/2);
+    
+    CS1.x(imid)=xmid;
+    CS1.zb(imid)=CS1.zbmin;
+    
+    CS1.x(imid-1)=xmid-b_bottom/2;
+    CS1.zb(imid-1)=CS1.zbmin;
+    CS1.x(imid+1)=xmid+b_bottom/2;
+    CS1.zb(imid+1)=CS1.zbmin;
+    
+    for i=2:1:(CS1.npt-1)/2
+        CS1.x(imid-i)=CS1.x(imid-1)-(i-1)*h/tan_la;
+        CS1.x(imid+i)=CS1.x(imid+1)+(i-1)*h/tan_la;
+        
+        CS1.zb(imid-i)=CS1.zbmin+abs(CS1.x(imid-i)-CS1.x(imid-1))*tan_la;
+        CS1.zb(imid+i)=CS1.zbmin+abs(CS1.x(imid+i)-CS1.x(imid+1))*tan_la;
+    end
+    CS1.kchfp(1)=1;
+    CS1.kchfp(CS1.npt)=1;    
 end
 
 %update new CS data
@@ -281,3 +309,15 @@ hold on;
 plot(CS_simplified(handles.ics).x,CS_simplified(handles.ics).zb,'ro-');
 hold off;
     
+
+
+% --------------------------------------------------------------------
+function Trapezoid_Callback(hObject, eventdata, handles)
+% hObject    handle to Trapezoid (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.Rectangle,'Checked','off');
+set(handles.Triangle,'Checked','off');
+set(hObject,'Checked','on');
+handles.cs_shape='Trapezoid';
+guidata(hObject, handles); 
