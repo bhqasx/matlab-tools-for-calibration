@@ -274,7 +274,7 @@ elseif strcmp(handles.cs_shape,'Triangle')
     CS1.kchfp(1)=1;
     CS1.kchfp(CS1.npt)=1;
 elseif strcmp(handles.cs_shape,'Trapezoid')
-    tan_la=1;           %%lateral slope of river bed
+    tan_la=1/3;           %%lateral slope of river bed
     b_bottom=area/h-h/tan_la;           %bottom width
     CS1.npt=7;
     CS1.x=zeros(1,CS1.npt);
