@@ -64,6 +64,7 @@ file_id=fopen('CS_xyz.txt', 'w');
      %输出坐标文件
      for jj=1:1:CSold(ii).nodes
          fprintf(file_id,'%10.1f\t%10.1f\t%10.1f\n', CSold(ii).xy(jj,1), CSold(ii).xy(jj,2), CSold(ii).zb(jj));
+         %fprintf(file_id,'%10.1f%c%10.1f%c%10.1f\n', CSold(ii).xy(jj,1),',', CSold(ii).xy(jj,2),',', CSold(ii).zb(jj));   %seperate coordinates with comma
      end
  end
  hold off;   
