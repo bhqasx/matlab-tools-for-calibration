@@ -1,0 +1,180 @@
+function SimuView_node
+%plot simulations results on a 2d mesh, including water level, bed
+%elevation, velocity
+nzone_max=1000;
+th=zeros(nzone_max,1);
+
+[filename,path,FilterIndex]=uigetfile('','Choose a file of simulation results');
+file_id=fopen([path,filename]);
+
+nzone=1;
+tline=fgetl(file_id);
+tline=fgetl(file_id);
+a=textscan(tline,'%s','Delimiter','=');
+aa=textscan(a{1}{2},'%s%f');
+th(nzone)=aa{2}(1);
+aa=textscan(a{1}{3},'%f');
+nnod=aa{1}(1);       %get number of nodes
+aa=textscan(a{1}{4},'%f');
+ntri=aa{1}(1);          %get number of triangles
+
+p=zeros(nnod,2);
+t=zeros(ntri,3);
+zw=zeros(nnod,nzone_max);     %water level
+zb=zeros(nnod,nzone_max);      %bed elevation
+ux=zeros(nnod,nzone_max);
+uy=zeros(nnod,nzone_max);
+for i=1:1:nnod
+    tline=fgetl(file_id);
+    a=textscan(tline,'%f');
+    p(i,1)=a{1}(1);
+    p(i,2)=a{1}(2);
+    
+    zw(i,nzone)=a{1}(3);
+    zb(i,nzone)=a{1}(8);
+    ux(i,nzone)=a{1}(4);
+    uy(i,nzone)=a{1}(5);
+end
+for i=1:1:ntri
+    tline=fgetl(file_id);
+    a=textscan(tline,'%f');
+    t(i,:)=a{1}(1:3);
+end
+
+while ~feof(file_id)
+    nzone=nzone+1;
+    tline=fgetl(file_id);
+    a=textscan(tline,'%s','Delimiter','=');
+    aa=textscan(a{1}{2},'%s%f');
+    th(nzone)=aa{2}(1);
+    
+    for i=1:1:nnod
+        tline=fgetl(file_id);
+        a=textscan(tline,'%f');      
+        zw(i,nzone)=a{1}(3);
+        zb(i,nzone)=a{1}(8);
+        ux(i,nzone)=a{1}(4);
+        uy(i,nzone)=a{1}(5);
+    end
+end
+
+h=figure;
+nhit=0;
+set(h,'KeyPressFcn',@MyFigureCallback);
+
+fclose(file_id); 
+
+%---------------------nested function------------------
+function MyFigureCallback(hObj,cb_data)
+    
+if strcmp(cb_data.Key,'rightarrow')
+    nhit=nhit+1;
+    izone=mod(nhit,nzone);
+    if izone==0
+        izone=nzone;
+    end
+    t_str=['t=',num2str(th(izone)),'   izone=',num2str(izone)];
+    trisurf(t,p(:,1),p(:,2),zw(:,izone));
+    title(t_str);
+    view([0,90]);
+end
+
+if strcmp(cb_data.Key,'leftarrow')
+    nhit=nhit-1;
+    izone=mod(nhit,nzone);
+    if izone==0
+        izone=nzone;
+    end
+    t_str=['t=',num2str(th(izone)),'   izone=',num2str(izone)];
+    trisurf(t,p(:,1),p(:,2),zw(:,izone));
+    title(t_str);
+    view([0,90]);
+end
+
+if strcmp(cb_data.Key,'uparrow')&&(nhit>0)
+    izone=mod(nhit,nzone);
+    if izone==0
+        izone=nzone;
+    end
+    t_str=['t=',num2str(th(izone)),'   izone=',num2str(izone)];
+    quiver(p(:,1),p(:,2),ux(:,izone),uy(:,izone));
+    title(t_str);
+end
+
+if strcmp(cb_data.Key,'downarrow')&&(nhit>0)
+    izone=mod(nhit,nzone);
+    if izone==0
+        izone=nzone;
+    end
+    t_str=['t=',num2str(th(izone)),'   izone=',num2str(izone)];
+    trisurf(t,p(:,1),p(:,2),zb(:,izone));   
+    title(t_str);
+    view([0,90]);
+end
+
+if strcmp(cb_data.Key,'space')&&(nhit>0)
+    find_node_cell;
+end
+
+disp(nhit);
+
+end
+
+%---------------------nested function 2---------------------
+function find_node_cell
+
+dcm_obj = datacursormode(h);
+dcm_obj.removeAllDataCursors();
+set(dcm_obj,'DisplayStyle','datatip',...
+    'SnapToDataVertex','on','Enable','on');
+
+button=questdlg('Click on the nodes, then press Return.');
+if ~strcmp(button,'Yes')
+    return;
+end
+% Wait while the user does this.
+pause;
+
+%hold Alt to pick mutiple points
+cursor = getCursorInfo(dcm_obj);
+%---------------------find the nodes by their xy-------------------
+npick=size(cursor,2);
+id_nod=zeros(npick,1);
+for i=1:1:npick
+    for j=1:1:nnod
+        if (p(j,1)==cursor(i).Position(1))&&(p(j,2)==cursor(i).Position(2))
+            id_nod(i)=j;
+            break;
+        end
+    end
+end
+
+%---------------------find the cells including the nodes-------------------
+id_cell=[];
+nt=size(t,1);
+if npick==1
+    for j=1:1:nt
+        if any(t(j,:)==id_nod(1))
+            id_cell=[id_cell;j];
+        end
+    end
+elseif npick==2
+    for j=1:1:nt
+        if any(t(j,:)==id_nod(1))&&(any(t(j,:)==id_nod(2)))
+            id_cell=[id_cell;j];
+        end
+    end
+elseif npick==3
+    for j=1:1:nt
+        if any(t(j,:)==id_nod(1))&&(any(t(j,:)==id_nod(2)))&&(t(j,:)==id_nod(3))
+            id_cell=[id_cell;j];
+            break;
+        end
+    end    
+end
+
+disp(id_nod);
+disp(id_cell);
+end
+
+end
