@@ -1,4 +1,4 @@
-function SimuView_node
+function [p,t,zw,zb]=SimuView_node
 %plot simulations results on a 2d mesh, including water level, bed
 %elevation, velocity
 nzone_max=1000;
@@ -24,6 +24,10 @@ zw=zeros(nnod,nzone_max);     %water level
 zb=zeros(nnod,nzone_max);      %bed elevation
 ux=zeros(nnod,nzone_max);
 uy=zeros(nnod,nzone_max);
+S=zeros(nnod,nzone_max);
+dzb=zeros(nnod,nzone_max);   %variation of zb compared to the initial zb
+
+zw_lim=zeros(nzone_max,2);
 for i=1:1:nnod
     tline=fgetl(file_id);
     a=textscan(tline,'%f');
@@ -34,7 +38,12 @@ for i=1:1:nnod
     zb(i,nzone)=a{1}(8);
     ux(i,nzone)=a{1}(4);
     uy(i,nzone)=a{1}(5);
+    S(i,nzone)=a{1}(12);
+    dzb(i,nzone)=a{1}(14);
 end
+%zw_lim(nzone,1)=min(zw(:,nzone));
+%zw_lim(nzone,2)=max(zw(:,nzone));
+
 for i=1:1:ntri
     tline=fgetl(file_id);
     a=textscan(tline,'%f');
@@ -55,66 +64,68 @@ while ~feof(file_id)
         zb(i,nzone)=a{1}(8);
         ux(i,nzone)=a{1}(4);
         uy(i,nzone)=a{1}(5);
+        S(i,nzone)=a{1}(12);
+        dzb(i,nzone)=a{1}(14);
     end
+    %zw_lim(nzone,1)=min(zw(:,nzone));
+    %zw_lim(nzone,2)=max(zw(:,nzone));
 end
 
 h=figure;
 nhit=0;
+kvar=1;
 set(h,'KeyPressFcn',@MyFigureCallback);
 
 fclose(file_id); 
 
 %---------------------nested function------------------
 function MyFigureCallback(hObj,cb_data)
-    
+
 if strcmp(cb_data.Key,'rightarrow')
     nhit=nhit+1;
-    izone=mod(nhit,nzone);
-    if izone==0
-        izone=nzone;
-    end
-    t_str=['t=',num2str(th(izone)),'   izone=',num2str(izone)];
-    trisurf(t,p(:,1),p(:,2),zw(:,izone));
-    title(t_str);
-    view([0,90]);
-end
-
-if strcmp(cb_data.Key,'leftarrow')
+elseif strcmp(cb_data.Key,'leftarrow')
     nhit=nhit-1;
-    izone=mod(nhit,nzone);
-    if izone==0
-        izone=nzone;
-    end
-    t_str=['t=',num2str(th(izone)),'   izone=',num2str(izone)];
-    trisurf(t,p(:,1),p(:,2),zw(:,izone));
-    title(t_str);
-    view([0,90]);
-end
-
-if strcmp(cb_data.Key,'uparrow')&&(nhit>0)
-    izone=mod(nhit,nzone);
-    if izone==0
-        izone=nzone;
-    end
-    t_str=['t=',num2str(th(izone)),'   izone=',num2str(izone)];
-    quiver(p(:,1),p(:,2),ux(:,izone),uy(:,izone));
-    title(t_str);
-end
-
-if strcmp(cb_data.Key,'downarrow')&&(nhit>0)
-    izone=mod(nhit,nzone);
-    if izone==0
-        izone=nzone;
-    end
-    t_str=['t=',num2str(th(izone)),'   izone=',num2str(izone)];
-    trisurf(t,p(:,1),p(:,2),zb(:,izone));   
-    title(t_str);
-    view([0,90]);
-end
-
-if strcmp(cb_data.Key,'space')&&(nhit>0)
+elseif strcmp(cb_data.Key,'uparrow')
+    kvar=kvar+1;
+elseif strcmp(cb_data.Key,'downarrow')
+    kvar=kvar-1;
+elseif strcmp(cb_data.Key,'space')&&(nhit>0)
     find_node_cell;
+    return
 end
+
+izone=mod(nhit,nzone);
+if izone==0
+    izone=nzone;
+end
+
+kvar=mod(kvar,5);
+if kvar==0
+    kvar=5;
+end
+
+switch kvar
+    case 1
+        trisurf(t,p(:,1),p(:,2),zw(:,izone));
+        t_str=['zw, '];
+        %set(gca,'CLim',zw_lim(izone,:));
+    case 2
+        quiver(p(:,1),p(:,2),ux(:,izone),uy(:,izone));
+        t_str=['uv, '];
+    case 3
+        trisurf(t,p(:,1),p(:,2),zb(:,izone));
+        t_str=['zb, '];
+    case 4
+        trisurf(t,p(:,1),p(:,2),S(:,izone));
+        t_str=['sus, '];
+    case 5
+        trisurf(t,p(:,1),p(:,2),dzb(:,izone));
+        t_str=['dzb, '];
+end
+
+t_str=[t_str,'t=',num2str(th(izone)),'   izone=',num2str(izone)];
+title(t_str);
+view([0,90]);
 
 disp(nhit);
 
@@ -166,7 +177,7 @@ elseif npick==2
     end
 elseif npick==3
     for j=1:1:nt
-        if any(t(j,:)==id_nod(1))&&(any(t(j,:)==id_nod(2)))&&(t(j,:)==id_nod(3))
+        if any(t(j,:)==id_nod(1))&&any(t(j,:)==id_nod(2))&&any(t(j,:)==id_nod(3))
             id_cell=[id_cell;j];
             break;
         end

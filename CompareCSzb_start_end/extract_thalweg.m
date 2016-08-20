@@ -1,5 +1,10 @@
-function [dist,zbed]=extract_thalweg(handles)
+function [dist,zbed]=extract_thalweg(row_npt)
 %画纵剖面
+
+if nargin==0
+    row_npt=3;       %每一块断面数据内部，断面点个数所在的行
+end
+
 button=questdlg('请地形文件','Guide','Yes');
 if ~strcmp(button,'Yes')
     return;
@@ -9,14 +14,15 @@ end
 if iscellstr(filename)
     [dist,zbed]=MultiFiles(filename,path);  
 else
-    [dist,zbed]=OneFile(filename);
+    [dist,zbed]=OneFile(filename,path,row_npt);
 end
 
 
 %------------------处理一个完整的地形文件---------------
-function [dist,zbed]=OneFile(filename)
+function [dist,zbed]=OneFile(filename,path,row_npt)
 
-file_id=fopen(filename);
+cs_filepath=[path,filename];
+file_id=fopen(cs_filepath);
 if file_id>=3
     tline=fgetl(file_id);
     tline=fgetl(file_id);
@@ -26,15 +32,17 @@ if file_id>=3
     b=cell(1,ncs);
     CS_array=struct('npt',b,'x',b,'zb',b);       %creat a struct array
     for i=1:1:ncs
-        tline=fgetl(file_id);
-        tline=fgetl(file_id);
-        tline=fgetl(file_id);
-        a=textscan(tline,'%f');
-        tmp=a{1}(1);            %read number of points at a cross-section
-        CS_array(i).npt=tmp;  
-        CS_array(i).x=zeros(tmp,1);
-        CS_array(i).zb=zeros(tmp,1);
-        tline=fgetl(file_id);
+        for tr=1:1:4
+            tline=fgetl(file_id);
+            if tr==row_npt
+                a=textscan(tline,'%f');
+                tmp=a{1}(1);            %read number of points at a cross-section
+                CS_array(i).npt=tmp;
+                CS_array(i).x=zeros(tmp,1);
+                CS_array(i).zb=zeros(tmp,1);
+            end
+        end
+        
         for j=1:1:CS_array(i).npt
             tline=fgetl(file_id);
             a=textscan(tline,'%f');  
@@ -50,7 +58,7 @@ if file_id>=3
     for i=1:1:ncs
         tline=fgetl(file_id);
         a=textscan(tline,'%f');         %distance of each cross-section
-        CS_array(i).dist=a{1}(1);
+        CS_array(i).dist=a{1}(2);
     end
     
     dist=arrayfun(@(x)x.dist,CS_array);
