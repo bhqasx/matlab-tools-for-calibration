@@ -6,8 +6,8 @@ button=questdlg('请打开旧的地形文件','Guide','Yes');
 if ~strcmp(button,'Yes')
     return;
 end
-filename=uigetfile;
-file_id=fopen(filename);
+[filename,path]=uigetfile('*.*');
+file_id=fopen([path,filename]);
 tline=fgetl(file_id);
 tline=fgetl(file_id);
 rt=textscan(tline,'%f');
@@ -15,7 +15,7 @@ ncs=rt{1}(1);            %获得断面数量
 cs_dist=zeros(ncs,1);
 
 a=cell(1,ncs);
-CSold=struct('nodes',a,'xy',a,'zb',a,'min_xy',a,'min_idx',a);
+CSold=struct('nodes',a,'xy',a,'zb',a,'min_xy',a,'min_idx',a,'L',a);
 
 total_nodes=0;
 for ii=1:1:ncs
@@ -25,6 +25,7 @@ for ii=1:1:ncs
     CSold(ii).nodes=rt{1}(1);       %断面上的测点数    
     CSold(ii).xy=zeros(CSold(ii).nodes,2);          %断面上测点的坐标
     CSold(ii).zb=zeros(CSold(ii).nodes,1);   
+    CSold(ii).L=zeros(CSold(ii).nodes,1);    %起点距
     total_nodes=total_nodes+CSold(ii).nodes;       %总数据点数
     
     tline=fgetl(file_id);
@@ -42,6 +43,7 @@ for ii=1:1:ncs
     for jj=1:1:CSold(ii).nodes
         tline=fgetl(file_id);
         rt=textscan(tline,'%f');
+        CSold(ii).L(jj)=rt{1}(2);
         CSold(ii).xy(jj,:)=[lx,ly]+rt{1}(2)*cs_dir;
         CSold(ii).zb(jj)=rt{1}(3);
     end
