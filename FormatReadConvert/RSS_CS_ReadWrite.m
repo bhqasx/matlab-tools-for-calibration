@@ -20,20 +20,22 @@ for i=1:1:nriv
     Rivers(i).numbr=a{1}(2);  %第i条河所连接到的干流断面编号
     
     b=cell(1,Rivers(i).ncs);
-    Rivers(i).CS=struct('npt',b,'dx',b,'x',b,'zb',b,'nzone1',b);
+    Rivers(i).CS=struct('npt',b,'dx',b,'x',b,'x_label',b,'zb',b,'nzone1',b,'name',b);
     Rivers(i).CS(1).dist=0.0;
     
     for j=1:1:Rivers(i).ncs
         tline=fgetl(file_id);
-        a=textscan(tline,'%f');
-        Rivers(i).CS(j).npt=a{1}(2);
-        Rivers(i).CS(j).dx=a{1}(3);
+        a=textscan(tline,'%f%f%f%s');
+        Rivers(i).CS(j).npt=a{2};
+        Rivers(i).CS(j).x_label=a{3};
+        Rivers(i).CS(j).name=a{4};
         x=zeros(Rivers(i).CS(j).npt,1);
         zb=zeros(Rivers(i).CS(j).npt,1);
         nzone1=zeros(Rivers(i).CS(j).npt,1);
         if j>1
             %计算里程
-            Rivers(i).CS(j).dist=Rivers(i).CS(j-1).dist+Rivers(i).CS(j).dx/1000;
+            %Rivers(i).CS(j).dist=Rivers(i).CS(j-1).dist+Rivers(i).CS(j).dx/1000;
+            Rivers(i).CS(j).dist=Rivers(i).CS(j-1).dist+abs(Rivers(i).CS(j).x_label-Rivers(i).CS(j-1).x_label);
         end
         
         for k=1:1:Rivers(i).CS(j).npt
@@ -57,13 +59,10 @@ Rivers(1).numbr=[0,0,0];
 for i=2:1:nriv
    Rivers(i).numbr=[1,Rivers(i).numbr,1]; 
 end
-Rivers(1).name='古贤';
-Rivers(2).name='延河';
-Rivers(3).name='清涧河';
-Rivers(4).name='无定河';
-Rivers(5).name='昕水河';
-Rivers(6).name='屈产河';
-Rivers(7).name='三川河';
+Rivers(1).name='龙三区间';
+Rivers(2).name='渭河';
+Rivers(3).name='北洛河';
+
 for i=1:1:nriv
    filename=['1-断面地形INI-河道',num2str(i),'.DAT'];
    file_id=fopen(filename, 'w');
@@ -72,7 +71,7 @@ for i=1:1:nriv
    fprintf(file_id,'%d\t%d\t%d\t%d\n',Rivers(i).ncs,Rivers(i).numbr(1),Rivers(i).numbr(2),Rivers(i).numbr(3));
    
    for j=1:1:Rivers(i).ncs
-       fprintf(file_id,'%d\t%d\t%f\t%s\n',j,Rivers(i).CS(j).npt,Rivers(i).CS(j).dist,[Rivers(i).name,num2str(j)]);
+       fprintf(file_id,'%d\t%d\t%f\t%s\n',j,Rivers(i).CS(j).npt,Rivers(i).CS(j).dist,Rivers(i).CS(j).name{1});
        for k=1:1:Rivers(i).CS(j).npt
            fprintf(file_id,'%d\t%f\t%f\t%d\n',k,Rivers(i).CS(j).x(k),Rivers(i).CS(j).zb(k),Rivers(i).CS(j).nzone1(k));
        end
