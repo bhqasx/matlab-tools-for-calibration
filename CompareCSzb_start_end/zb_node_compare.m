@@ -100,7 +100,11 @@ else
     plotCS(CS(handles.ics));
     grid on;
 end
-set(handles.text1,'String',['CS', num2str(handles.ics)]);
+if isfield(CS(handles.ics),'name')
+    set(handles.text1,'String',['CS', num2str(handles.ics),'(',CS(handles.ics).name,')']);
+else
+    set(handles.text1,'String',['CS', num2str(handles.ics)]);
+end
 guidata(hObject, handles);    %the ics field is added to handles, so this line is needed
 
 
