@@ -9,7 +9,7 @@ end
 ncs1=size(CS,1);
 ncs2=size(CS_BlcPara,1);
 b=cell(ncs1,1);
-CS_balance=struct('name',b,'x',b,'zb',b,'modi_info',b);
+CS_balance=struct('name',b,'x',b,'zb',b,'modi_info',b,'done',b);
 
 for i=1:1:ncs1
     for j=1:1:ncs2
@@ -28,10 +28,12 @@ CSnew.x=zeros(6,1);
 CSnew.zb=zeros(6,1);
 CSnew.name=CSold.name;
 CSnew.modi_info='None';
+CSnew.done=0;
 
 if CS_Para.z_ch_bot<min(CSold.zb)   %如果设计槽底低于原始断面最低点
     CSnew.x=CSold.x;
     CSnew.zb=CSold.zb;
+    CSnew.done=1;
     return;
 end
 
@@ -49,6 +51,7 @@ end
 if flag==0;
     CSnew.x=CSold.x;
     CSnew.zb=CSold.zb;
+    CSnew.done=1;
     return;
 end
 
@@ -66,6 +69,7 @@ end
 if flag==0
     CSnew.x=CSold.x;
     CSnew.zb=CSold.zb;
+    CSnew.modi_info='Done';
     return;
 end
 
