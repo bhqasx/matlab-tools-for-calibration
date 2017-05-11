@@ -11,9 +11,9 @@ end
 [filename,path,FilterIndex]=uigetfile('*.*');
 [pathstr,name,ext] = fileparts(filename);
 if strcmp(ext,'.mat')
-    load([path,filename],'Rivers');
-    CS=Rivers(1).CS;      %目前每次执行只能看一条河的所有断面
-    ncs=Rivers(1).ncs;
+    load([path,filename],'River');
+    CS=River(1).CS;      %目前每次执行只能看一条河的所有断面
+    ncs=River(1).ncs;
     for i=1:1:ncs
         CS(i).zb0=CS(i).zb;
         CS(i).zbk=CS(i).zb;

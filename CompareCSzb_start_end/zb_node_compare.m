@@ -22,7 +22,7 @@ function varargout = zb_node_compare(varargin)
 
 % Edit the above text to modify the response to help zb_node_compare
 
-% Last Modified by GUIDE v2.5 31-Mar-2017 22:53:33
+% Last Modified by GUIDE v2.5 11-May-2017 16:32:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -298,3 +298,27 @@ CS_af(handles.ics).zb=[CS_af(handles.ics).zb;zbright];
 
 CS_af(handles.ics).done=1;
 plotCS(CS(handles.ics),CS_af(handles.ics));
+
+
+% --------------------------------------------------------------------
+function Volume_Callback(hObject, eventdata, handles)
+% hObject    handle to Volume (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+% --------------------------------------------------------------------
+function Vol_Level_Curve_Callback(hObject, eventdata, handles)
+% hObject    handle to Vol_Level_Curve (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global CS;
+level=0;
+button=questdlg('请输入一组水位','Guide','Yes');
+if ~strcmp(button,'Yes')
+    return;
+end
+openvar('level');     %在窗口中输入
+Vol=getVolAtZ(level,CS);
