@@ -1,5 +1,6 @@
 function [River]=ReadExtrctCS(ncs_out,cs_names,cs_dist)
 %从原始断面文件中提取需要的断面，生成RSS模型所需的断面地形文件
+%每个断面数据块之间至少要有一个空行
 
 
 %-------------------------读取原始断面成果文件--------------------
@@ -19,6 +20,11 @@ while~feof(file_id)
    CS.name=a{1}(1);
    x=[];
    zb=[];
+   if (a{2}(1)~=1)       %检查断面点号是否为1
+       disp('reading error');
+       pause
+   end
+   
    while ~isempty(a{2})
        x=[x;a{3}];
        zb=[zb;a{6}];

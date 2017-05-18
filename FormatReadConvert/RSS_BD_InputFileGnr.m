@@ -20,7 +20,7 @@ f3_id=fopen(filename,'w');
 fprintf(f2_id,'%s\n','****');
 fprintf(f2_id,'%s\n','进口边界类型	出口边界类型	对应水位流量关系');
 fprintf(f2_id,'%s\n','0	1	0');
-fprintf(f2_id,'%s\n','时段	时间	进口流量	出口水位	水位控制	含沙量	级配1	级配2	级配3	级配4	级配5	级配6	级配7');
+fprintf(f2_id,'%s\n','时段	时间	进口流量	出口水位	水位控制	输沙率	级配1	级配2	级配3	级配4	级配5	级配6	级配7');
 s_gradation=[65.2, 86.1, 98.6, 99.9, 100, 100, 100];
 
 ndt=0;
@@ -67,7 +67,7 @@ while ~feof(f1_id)
                 case 3     %1月
                     d_in_m=31;
                 case 4     %2月
-                    d_in_m=DaysFeburary(year);
+                    d_in_m=DaysFeburary(year+1);
                 case 5     %3月
                     d_in_m=31;
                 case 6     %4月
@@ -77,7 +77,7 @@ while ~feof(f1_id)
                 case 8     %6月
                     d_in_m=30;
             end
-            sIn=qsIn*1000*10^8/d_in_m/24/3600/qIn;   %非汛期qsIn的单位是亿吨/月
+            sIn=qsIn*10^8/d_in_m/24/3600;   %非汛期qsIn的单位是亿吨/月,RSS模型输入文件中输沙率单位是t/s
             for i=1:1:d_in_m
                 ndt=ndt+1;
                 fprintf(f2_id,fmtstr,ndt,24,qIn,zDown,0,sIn,s_gradation);
