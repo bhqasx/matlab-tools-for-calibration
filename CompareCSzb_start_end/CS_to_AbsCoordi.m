@@ -1,6 +1,6 @@
+function CSold=CS_to_AbsCoordi
 %得到断面测点的绝对坐标
 
-clear;
 %--------------------------------输入旧地形资料----------------------------
 button=questdlg('请打开旧的地形文件','Guide','Yes');
 if ~strcmp(button,'Yes')

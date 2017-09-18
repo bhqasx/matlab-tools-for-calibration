@@ -97,7 +97,7 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % »­ÈýÎ¬µØÐÎ
 close('RiverGeoAnalysis');
-CS_to_AbsCoordi;
+CS=CS_to_AbsCoordi;
 
 
 % --- Executes on button press in topo_design_button.
