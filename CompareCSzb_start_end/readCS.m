@@ -1,4 +1,16 @@
-function [ncs,CS_array]=readCS(fpath)
+function [ncs,CS_array]=readCS(fpath,iline_npt,iline_xy1,iline_xy2)
+%iline_npt: number of the line where the number of points at a
+%cross-section is located
+
+nSectionHead=4;      %number of lines in the head of each CS data block
+if nargin==1
+    iline_npt=3;
+    iline_xy1=0;
+    iline_xy2=0;
+elseif nargin==2
+    iline_xy1=0;
+    iline_xy2=0;    
+end
 
 file_id=fopen(fpath);
 if file_id>=3
@@ -8,18 +20,33 @@ if file_id>=3
     ncs=a{1}(1);          %get the number of cross-sections
 
     b=cell(1,ncs);
-    CS_array=struct('npt',b,'x',b,'zb',b);       %creat a struct array
+    if iline_xy1~=0&&iline_xy2~=0
+        CS_array=struct('npt',b,'x',b,'zb',b,'name',b,'EdPt1_xy',b,'EdPt2_xy',b);
+    else
+        CS_array=struct('npt',b,'x',b,'zb',b,'name',b);       %creat a struct array
+    end
     
     for i=1:1:ncs
-        tline=fgetl(file_id);
-        tline=fgetl(file_id);
-        tline=fgetl(file_id);
-        a=textscan(tline,'%f');
-        tmp=a{1}(1);            %read number of points at a cross-section
-        CS_array(i).npt=tmp;
-        CS_array(i).x=zeros(tmp,1);
-        CS_array(i).zb=zeros(tmp,1);
-        tline=fgetl(file_id);
+        for nl=1:1:nSectionHead
+            tline=fgetl(file_id);
+            if nl==1
+                a=textscan(tline,'%s');
+                CS_array(i).name=a{1};
+            elseif nl==iline_npt
+                a=textscan(tline,'%f');
+                tmp=a{1}(1);            %read number of points at a cross-section
+                CS_array(i).npt=tmp;
+                CS_array(i).x=zeros(tmp,1);
+                CS_array(i).zb=zeros(tmp,1);
+            elseif nl==iline_xy1
+                a=textscan(tline,'%f');
+                CS_array(i).EdPt1_xy=[a{1}(1),a{1}(2)];
+            elseif nl==iline_xy2
+                a=textscan(tline,'%f');
+                CS_array(i).EdPt2_xy=[a{1}(1),a{1}(2)];
+            end
+        end
+        
         for j=1:1:CS_array(i).npt
             tline=fgetl(file_id);
             a=textscan(tline,'%f');
