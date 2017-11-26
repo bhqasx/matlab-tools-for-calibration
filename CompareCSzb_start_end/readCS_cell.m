@@ -33,9 +33,19 @@ for i=1:1:ncs
         CS_array(i).EdPt2_xy=cell2mat(A(iline_xy1,:));
     end
     
-    CS_array(i).x=cell2mat(A(5:4+npt,col_start+1));
+    try 
+        CS_array(i).x=cell2mat(A(5:4+npt,col_start+1));
+    catch ME
+        disp(['error at i=', num2str(i), '     CS name is ',CS_array(i).name]);
+        rethrow(ME);
+    end
     CS_array(i).zb=cell2mat(A(5:4+npt,col_start+2));
     CS_array(i).kchfp=cell2mat(A(5:4+npt,col_start+3));
     CS_array(i).zbmin=min(CS_array(i).zb); 
+    
+    %检查输入数据合法性
+    if numel(unique(CS_array(i).x))~=numel(CS_array(i).x)
+        disp(['repeated x value in CS', num2str(i)]);
+    end
 end
 

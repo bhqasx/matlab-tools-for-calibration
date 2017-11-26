@@ -90,7 +90,6 @@ for ii=1:1:ncs+ncs_inp
                 Zp=griddatan(data_xy,data_val,Xp);             %插值点上的高程   
                 %插值结果输入到新地形集合中
                 CSnew(ii).nodes=np_inp;
-                CSnew(ii).dist=dist_new(ii)/1000;
                 CSnew(ii).x=Xp(:,2);
                 CSnew(ii).zb=Zp;
             end
@@ -140,7 +139,7 @@ end
 fprintf(file_id, '%s\n', '各断面沿程距离');
 fprintf(file_id, '%s\n', 'i      DistLg(i)');
 for ii=1:1:ncs+ncs_inp
-    fprintf(file_id, '%3d\t%6.3f\n', ii, CSnew(ii).dist);                         %沿程距离
+    fprintf(file_id, '%3d\t%6.3f\n', ii, CSnew(ii).dist/1000);                         %沿程距离
 end
 
 fclose(file_id);
