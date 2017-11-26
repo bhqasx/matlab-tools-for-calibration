@@ -1,4 +1,5 @@
-function [ncs,CS_array]=readCS(fpath,iline_npt,iline_xy1,iline_xy2)
+function [ncs,CS_array]=readCS_txt(fpath,iline_npt,iline_xy1,iline_xy2)
+%从txt文件中读入断面数据
 %iline_npt: number of the line where the number of points at a
 %cross-section is located
 
