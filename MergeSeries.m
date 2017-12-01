@@ -4,7 +4,8 @@ function [x3,y31,y32]=MergeSeries(x1,y1,x2,y2)
 
 x3=x2;
 y31=y2;
-y32=zeros(size(y31));
+%y32=zeros(size(y31));
+y32=y2;
 
 nx1=size(x1,1);
 for i=1:1:nx1
@@ -54,8 +55,6 @@ for i=1:1:nx1
     end
 end
 
-%to fill the rest cells of y32, use:
-%y32=interp_qs(x3,y32);
-%note the first and last element of y32 should not be 0 when use interp_qs
+
 
            

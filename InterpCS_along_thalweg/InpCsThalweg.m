@@ -90,6 +90,7 @@ for ii=1:1:ncs+ncs_inp
                 Zp=griddatan(data_xy,data_val,Xp);             %插值点上的高程   
                 %插值结果输入到新地形集合中
                 CSnew(ii).nodes=np_inp;
+                CSnew(ii).dist=dist_new(ii);
                 CSnew(ii).x=Xp(:,2);
                 CSnew(ii).zb=Zp;
             end
