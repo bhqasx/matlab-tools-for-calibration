@@ -1,6 +1,7 @@
 function hours = time_h_LYR(varargin)
 %UNTITLED2 Summary of this function goes here
 %   the year is 1962 by default
+
 start_h=input('input starting hour:');
 year=input('input the year:');
 rows=size(varargin{1},1);
