@@ -35,11 +35,14 @@ if nargin==0
     cs_dist=zeros(ncs,1);
     
     a=cell(1,ncs);
-    CSold=struct('npt',a,'xy',a,'zb',a,'min_xy',a,'min_idx',a,'L',a);
+    CSold=struct('npt',a,'xy',a,'zb',a,'min_xy',a,'min_idx',a,'L',a,'name',a);
     
     total_nodes=0;
     for ii=1:1:ncs
         tline=fgetl(file_id);
+        a=textscan(tline,'%s');
+        CSold(ii).name=a{1};
+        
         tline=fgetl(file_id);
         rt=textscan(tline,'%f');
         CSold(ii).npt=rt{1}(1);       %断面上的测点数

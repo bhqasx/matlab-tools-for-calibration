@@ -10,8 +10,8 @@ button=questdlg('请打开旧的地形文件','Guide','Yes');
 if ~strcmp(button,'Yes')
     return;
 end
-filename=uigetfile;
-file_id=fopen(filename);
+[filename,path]=uigetfile('*.*');
+file_id=fopen([path,filename]);
 tline=fgetl(file_id);
 tline=fgetl(file_id);
 rt=textscan(tline,'%f');
