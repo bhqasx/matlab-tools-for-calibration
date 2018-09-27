@@ -17,9 +17,9 @@ addParameter(p,'ncol',defaultNcol,validNcol);
 parse(p,A,nhd,iline_npt,varargin{:});
 iline_xy1=p.Results.iline_xy1;
 iline_xy2=p.Results.iline_xy2;
-ncol=p.Results.ncol;
+ncol=p.Results.ncol;     %每个断面的数据占几列
 
-ncs=size(A,2)/ncol;            %每个断面的数据占4列
+ncs=size(A,2)/ncol;            
 nrow_max=size(A,1);
 b=cell(1,ncs);
 if iline_xy1~=0&&iline_xy2~=0

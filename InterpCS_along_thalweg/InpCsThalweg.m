@@ -19,10 +19,13 @@ ncs=rt{1}(1);            %获得断面数量
 cs_dist=zeros(ncs,1);
 
 a=cell(1,ncs);
-CSold=struct('nodes',a,'x',a,'zb',a,'min_x',a,'min_z',a,'dist',a);
+CSold=struct('name',a,'nodes',a,'x',a,'zb',a,'min_x',a,'min_z',a,'dist',a);
 
 for ii=1:1:ncs
     tline=fgetl(file_id);
+    a=textscan(tline,'%s');
+    CSold(ii).name=a{1};
+    
     tline=fgetl(file_id);
     tline=fgetl(file_id);
     rt=textscan(tline,'%f');
@@ -71,7 +74,7 @@ end
 %-----------------------------------------------------------------------------------
 ncs_inp=size(dist_inp,1);         %插入断面个数
 a=cell(1,ncs+ncs_inp);
-CSnew=struct('nodes',a,'x',a,'zb',a,'min_x',a,'min_z',a,'dist',a);
+CSnew=CSold;
 total_nodes=0;
 [dist_new,idx_cs]=sort([cs_dist; dist_inp]);       %重新排列沿程距离
 for ii=1:1:ncs+ncs_inp
@@ -89,6 +92,7 @@ for ii=1:1:ncs+ncs_inp
                 
                 Zp=griddatan(data_xy,data_val,Xp);             %插值点上的高程   
                 %插值结果输入到新地形集合中
+                CSnew(ii).name='interplated';
                 CSnew(ii).nodes=np_inp;
                 CSnew(ii).dist=dist_new(ii);
                 CSnew(ii).x=Xp(:,2);
@@ -118,9 +122,9 @@ fclose(file_id);
 %-------------------------------------输出结果---------------------------------------
 file_id=fopen('CS_interplated.dat', 'w');
 fprintf(file_id,'%s\n','断面地形输入');
-fprintf(file_id,'%d\n',2*ncs-1);
+fprintf(file_id,'%d\n',ncs+ncs_inp);
 for ii=1:1:ncs+ncs_inp
-    fprintf(file_id,'%s\n',['CS',num2str(ii)]);
+    fprintf(file_id,'%s\n',char(CSnew(ii).name));
     fprintf(file_id,'%s\t%s\n', '100', '100');
     fprintf(file_id,'%d\t%d\n', CSnew(ii).nodes, 100);
     fprintf(file_id,'%s\t%s\n', '100', '100');
