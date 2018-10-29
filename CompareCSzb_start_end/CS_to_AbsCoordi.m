@@ -4,20 +4,6 @@ function CSold=CS_to_AbsCoordi(CSold)
 
 if nargin==1
     ncs=numel(CSold);
-    for ii=1:1:ncs
-        CSold(ii).xy=zeros(CSold(ii).npt,2);
-        lx=CSold(ii).EdPt1_xy(2);
-        ly=CSold(ii).EdPt1_xy(1);
-        rx=CSold(ii).EdPt2_xy(2);
-        ry=CSold(ii).EdPt2_xy(1);
-        cs_dir=[rx-lx,ry-ly]/norm([ry-ly,rx-lx]);
-        
-        for jj=1:1:CSold(ii).npt
-            CSold(ii).xy(jj,:)=[lx,ly]+CSold(ii).L(jj)*cs_dir;
-        end
-        [minval,CSold(ii).min_idx]=min(CSold(ii).zb); 
-        
-    end
 end
 
 if nargin==0
@@ -27,53 +13,24 @@ if nargin==0
         return;
     end
     [filename,path]=uigetfile('*.*');
-    file_id=fopen([path,filename]);
-    tline=fgetl(file_id);
-    tline=fgetl(file_id);
-    rt=textscan(tline,'%f');
-    ncs=rt{1}(1);            %获得断面数量
-    cs_dist=zeros(ncs,1);
     
-    a=cell(1,ncs);
-    CSold=struct('npt',a,'xy',a,'zb',a,'min_xy',a,'min_idx',a,'L',a,'name',a);
+    prompt={'iline_npt','iline_xy1', 'iline_xy2'};
+    user_in=inputdlg(prompt);
+    [ncs,CSold]=readCS_txt([path,filename], str2num(user_in{1}), str2num(user_in{2}), str2num(user_in{3}));
+end   
+
+for ii=1:1:ncs
+    CSold(ii).xy=zeros(CSold(ii).npt,2);
+    lx=CSold(ii).EdPt1_xy(2);
+    ly=CSold(ii).EdPt1_xy(1);
+    rx=CSold(ii).EdPt2_xy(2);
+    ry=CSold(ii).EdPt2_xy(1);
+    cs_dir=[rx-lx,ry-ly]/norm([ry-ly,rx-lx]);
     
-    total_nodes=0;
-    for ii=1:1:ncs
-        tline=fgetl(file_id);
-        a=textscan(tline,'%s');
-        CSold(ii).name=a{1};
-        
-        tline=fgetl(file_id);
-        rt=textscan(tline,'%f');
-        CSold(ii).npt=rt{1}(1);       %断面上的测点数
-        CSold(ii).xy=zeros(CSold(ii).npt,2);          %断面上测点的坐标
-        CSold(ii).zb=zeros(CSold(ii).npt,1);
-        CSold(ii).L=zeros(CSold(ii).npt,1);    %起点距
-        total_nodes=total_nodes+CSold(ii).npt;       %总数据点数
-        
-        tline=fgetl(file_id);
-        rt=textscan(tline,'%f');
-        lx=rt{1}(2);            %左岸坐标，注意这里将x轴的方向变为了向东，y变为向北
-        ly=rt{1}(1);
-        tline=fgetl(file_id);
-        rt=textscan(tline,'%f');
-        rx=rt{1}(2);            %右岸坐标
-        ry=rt{1}(1);
-        
-        cs_dir=[rx-lx,ry-ly]/norm([ry-ly,rx-lx]);       %断面方向向量
-        
-        %读取起点距并转为坐标
-        for jj=1:1:CSold(ii).npt
-            tline=fgetl(file_id);
-            rt=textscan(tline,'%f');
-            CSold(ii).L(jj)=rt{1}(2);
-            CSold(ii).xy(jj,:)=[lx,ly]+rt{1}(2)*cs_dir;
-            CSold(ii).zb(jj)=rt{1}(3);
-        end
-        
-        [minval,CSold(ii).min_idx]=min(CSold(ii).zb);          %找到深泓点
+    for jj=1:1:CSold(ii).npt
+        CSold(ii).xy(jj,:)=[lx,ly]+CSold(ii).x(jj)*cs_dir;
     end
-    fclose(file_id);
+    [minval,CSold(ii).min_idx]=min(CSold(ii).zb);   
 end
 
 

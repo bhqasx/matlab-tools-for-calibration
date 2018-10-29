@@ -90,7 +90,7 @@ for i=1:1:ncs
     
     %检查输入数据合法性
     if numel(unique(CS_array(i).x))~=numel(CS_array(i).x)
-        disp(['repeated x value in CS', num2str(i)]);
+        disp(['repeated x value in CS', num2str(i), '. name is ', CS_array(i).name]);
     end
 end
 
