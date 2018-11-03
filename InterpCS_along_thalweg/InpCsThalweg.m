@@ -19,7 +19,7 @@ ncs=rt{1}(1);            %获得断面数量
 cs_dist=zeros(ncs,1);
 
 a=cell(1,ncs);
-CSold=struct('name',a,'nodes',a,'x',a,'zb',a,'min_x',a,'min_z',a,'dist',a);
+CSold=struct('name',a,'nodes',a,'x',a,'zb',a,'min_x',a,'min_z',a,'dist',a,'kchfp',a);
 
 for ii=1:1:ncs
     tline=fgetl(file_id);
@@ -33,6 +33,7 @@ for ii=1:1:ncs
     total_nodes=total_nodes+rt{1}(1);         %计算总的数据点个数
     CSold(ii).x=zeros(CSold(ii).nodes,1);
     CSold(ii).zb=zeros(CSold(ii).nodes,1);
+    CSold(ii).kchfp=zeros(CSold(ii).nodes,1);
     tline=fgetl(file_id);    
     
     for jj=1:1:CSold(ii).nodes
@@ -40,6 +41,7 @@ for ii=1:1:ncs
         rt=textscan(tline,'%f');
         CSold(ii).x(jj)=rt{1}(2);
         CSold(ii).zb(jj)=rt{1}(3);
+        CSold(ii).kchfp(jj)=rt{1}(4);
     end
     [minval,min_i]=min(CSold(ii).zb);          %找到深泓点
     CSold(ii).min_x=CSold(ii).x(min_i);
@@ -97,6 +99,10 @@ for ii=1:1:ncs+ncs_inp
                 CSnew(ii).dist=dist_new(ii);
                 CSnew(ii).x=Xp(:,2);
                 CSnew(ii).zb=Zp;
+                
+                CSnew(ii).kchfp=zeros(np_inp,1);
+                CSnew(ii).kchfp(1)=1;
+                CSnew(ii).kchfp(end)=1;
             end
         end
     end
@@ -130,14 +136,7 @@ for ii=1:1:ncs+ncs_inp
     fprintf(file_id,'%s\t%s\n', '100', '100');
     
     for jj=1:1:CSnew(ii).nodes
-        if jj==1
-            rgh=1;              %糙率
-        elseif jj==CSnew(ii).nodes
-            rgh=1;
-        else
-            rgh=0;
-        end
-        fprintf(file_id,'%3d\t%7.2f\t%7.2f\t   %1d\n', jj, CSnew(ii).x(jj), CSnew(ii).zb(jj), rgh);
+        fprintf(file_id,'%3d\t%7.2f\t%7.2f\t   %1d\n', jj, CSnew(ii).x(jj), CSnew(ii).zb(jj), CSnew(ii).kchfp(jj));
     end
 end
 

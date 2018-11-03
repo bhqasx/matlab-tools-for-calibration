@@ -33,15 +33,17 @@ for ii=1:1:ncs
     end
     
     for jj=1:1:CS(ii).npt
-        fprintf(file_id,'%d\t%f\t%f\t%d\n',jj, CS(ii).L(jj), CS(ii).zb(jj), CS(ii).kchfp(jj)); 
+        fprintf(file_id,'%d\t%f\t%f\t%d\n',jj, CS(ii).x(jj), CS(ii).zb(jj), CS(ii).kchfp(jj)); 
     end
 end
 
 %输出断面沿程距离
-fprintf(file_id,'%s\n','各断面沿程距离');
-fprintf(file_id,'%s\n','i            DistLg(i)');
-for ii=1:1:ncs
-    fprintf(file_id,'%d\t%f\t%s\n', ii, CS(ii).dist/1000, char(CS(ii).name));
+if isfield(CS,'dist') 
+    fprintf(file_id,'%s\n','各断面沿程距离');
+    fprintf(file_id,'%s\n','i            DistLg(i)');
+    for ii=1:1:ncs
+        fprintf(file_id,'%d\t%f\t%s\n', ii, CS(ii).dist/1000, char(CS(ii).name));
+    end
 end
 
 fclose(file_id);
