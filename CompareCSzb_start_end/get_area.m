@@ -1,5 +1,5 @@
 function [A,B]=get_area(CS1,zw)
-%计算一定水位下的面积
+%计算一定水位下的过水面积
 
 %parse structure variable
 n_nod=CS1.npt;

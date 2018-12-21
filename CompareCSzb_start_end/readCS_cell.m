@@ -9,7 +9,7 @@ defaultNcol=4;    %每一个断面的数据占几列
 p=inputParser;
 addRequired(p,'A');
 addRequired(p,'nhd');    %number of lines in the head of each CS data block
-addRequired(p,'iline_npt');      %iline_npt can be set to 
+addRequired(p,'iline_npt');      %iline_npt can be set to 0
 addParameter(p,'iline_xy1',defaultIxy1);     %设置为name-valule pair
 addParameter(p,'iline_xy2',defaultIxy2);
 validNcol=@(x) x==4||x==2;      %每个断面的数据只能4列或2列
