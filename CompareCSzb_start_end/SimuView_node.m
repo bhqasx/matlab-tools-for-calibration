@@ -1,6 +1,19 @@
-function [p,t,zw,zb]=SimuView_node
+function [p,t,zw,zb]=SimuView_node(varargin)
 %plot simulations results on a 2d mesh, including water level, bed
 %elevation, velocity
+
+defaultXlim=[-inf, inf];
+defaultYlim=[-inf, inf];
+validXlim=@(x) size(x,1)==1&&size(x,2)==2;
+validYlim=@(x) size(x,1)==1&&size(x,2)==2;
+
+par=inputParser;
+addParameter(par,'xrange',defaultXlim,validXlim);
+addParameter(par,'yrange',defaultYlim,validYlim);
+parse(par,varargin{:});
+xrange=par.Results.xrange;
+yrange=par.Results.yrange;
+
 nzone_max=1000;
 th=zeros(nzone_max,1);
 
@@ -72,9 +85,14 @@ while ~feof(file_id)
 end
 
 h=figure;
+ctx_menu=uicontextmenu(h);
 nhit=0;
 kvar=1;
 set(h,'KeyPressFcn',@MyFigureCallback);
+% Assign the uicontextmenu to the figure
+h.UIContextMenu = ctx_menu;
+% Create child menu items for the uicontextmenu
+m1 = uimenu(ctx_menu,'Label','save image','Callback',@MySaveFig);
 
 fclose(file_id); 
 
@@ -110,8 +128,12 @@ switch kvar
         t_str=['zw, '];
         %set(gca,'CLim',zw_lim(izone,:));
     case 2
-        quiver(p(:,1),p(:,2),ux(:,izone),uy(:,izone));
-        t_str=['uv, '];
+        quiver3(p(:,1),p(:,2),400*ones(nnod,1),ux(:,izone),uy(:,izone),zeros(nnod,1),'r');
+        t_str=['uv, '];        
+        hold on;
+        trisurf(t,p(:,1),p(:,2),dzb(:,izone));
+        shading('interp');
+        hold off;
     case 3
         trisurf(t,p(:,1),p(:,2),zb(:,izone));
         t_str=['zb, '];
@@ -123,6 +145,8 @@ switch kvar
         t_str=['dzb, '];
 end
 
+xlim(xrange);
+ylim(yrange);
 t_str=[t_str,'t=',num2str(th(izone)),'   izone=',num2str(izone)];
 title(t_str);
 view([0,90]);
@@ -186,6 +210,16 @@ end
 
 disp(id_nod);
 disp(id_cell);
+end
+
+%---------------------nested function 3---------------------
+function MySaveFig(hObj,cb_data)
+    izone=mod(nhit,nzone);
+    if izone==0
+        izone=nzone;
+    end
+    picFilnam=['F:\XLD draw down\', 'izone_',num2str(izone),'.png'];
+    print(h,'-dpng',picFilnam);
 end
 
 end
