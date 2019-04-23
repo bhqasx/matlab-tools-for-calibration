@@ -22,7 +22,7 @@ function varargout = zb_node_compare(varargin)
 
 % Edit the above text to modify the response to help zb_node_compare
 
-% Last Modified by GUIDE v2.5 11-May-2017 16:32:45
+% Last Modified by GUIDE v2.5 23-Apr-2019 11:38:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,6 +57,7 @@ handles=CsCompare_initiate(handles);
 global CS;
 global CS_af;         %cross-sections after flood
 handles.ics=round(get(handles.slider1,'Value'));        %set the current CS as 1
+handles.draw_wl=0;
 plotCS(CS(handles.ics));
 set(handles.text1,'String',['CS', num2str(handles.ics)]);
 
@@ -101,8 +102,15 @@ else
     plotCS(CS(handles.ics));
     grid on;
 end
+
+if handles.draw_wl==1
+    hold on;
+    plot([CS(handles.ics).x(1), CS(handles.ics).x(end)], [handles.wl(handles.ics), handles.wl(handles.ics)]);
+    hold off;
+end
+
 if isfield(CS(handles.ics),'name')
-    set(handles.text1,'String',['CS', num2str(handles.ics),'(',CS(handles.ics).name,')']);
+    set(handles.text1,'String',['CS', num2str(handles.ics),'(',char(CS(handles.ics).name),')']);
 else
     set(handles.text1,'String',['CS', num2str(handles.ics)]);
 end
@@ -207,6 +215,7 @@ function Move_LNode_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%Edit Cross Section->Move Left Node
 handles.node_modi=1;
 set(handles.figure1,'KeyPressFcn',{@MyKeyPressF,handles});
 guidata(hObject, handles);
@@ -216,6 +225,7 @@ function Move_RNode_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%Edit Cross Section->Move Right Node
 handles.node_modi=2;
 set(handles.figure1,'KeyPressFcn',{@MyKeyPressF,handles});
 guidata(hObject, handles);
@@ -322,3 +332,22 @@ if ~strcmp(button,'Yes')
 end
 openvar('level');     %在窗口中输入
 Vol=getVolAtZ(level,CS);
+
+
+% --------------------------------------------------------------------
+function Water_Level_Callback(hObject, eventdata, handles)
+% hObject    handle to Water_Level (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function Add_Water_Level_Callback(hObject, eventdata, handles)
+% hObject    handle to Add_Water_Level (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+handles.draw_wl=1;
+S=uiimport;
+handles.wl=S.wl;
+guidata(hObject, handles); 

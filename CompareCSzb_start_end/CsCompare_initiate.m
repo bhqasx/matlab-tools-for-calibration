@@ -13,7 +13,11 @@ end
 if strcmp(ext,'.mat')
     load([path,filename],'River');
     CS=River(1).CS;      %目前每次执行只能看一条河的所有断面
-    ncs=River(1).ncs;
+    if isfield(River(1),'ncs')
+        ncs=River(1).ncs;
+    else
+        ncs=numel(River(1).CS);
+    end
     for i=1:1:ncs
         CS(i).zb0=CS(i).zb;
         CS(i).zbk=CS(i).zb;
