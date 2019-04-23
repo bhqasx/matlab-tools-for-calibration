@@ -1,4 +1,4 @@
-function rrr=whyslow(varargin)
+function rrr=whyslow(s)
 
 
 year=input('input the year:');

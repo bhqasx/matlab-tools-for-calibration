@@ -133,6 +133,9 @@ switch kvar
         hold on;
         trisurf(t,p(:,1),p(:,2),dzb(:,izone));
         shading('interp');
+        cbar=colorbar;
+        cbar.Label.String='冲刷深度 (m)';
+        cbar.Label.FontSize=16;
         hold off;
     case 3
         trisurf(t,p(:,1),p(:,2),zb(:,izone));
@@ -218,8 +221,9 @@ function MySaveFig(hObj,cb_data)
     if izone==0
         izone=nzone;
     end
-    picFilnam=['F:\XLD draw down\', 'izone_',num2str(izone),'.png'];
-    print(h,'-dpng',picFilnam);
+    picFilnam=['F:\文档\畛水项目验收\XLD draw down2\', 'izone_',num2str(izone)];
+    %print(h,'-dpng',picFilnam);
+    print(picFilnam,'-dpng');
 end
 
 end
