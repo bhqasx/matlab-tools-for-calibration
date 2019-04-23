@@ -46,6 +46,7 @@ while ~feof(f1_id)
         qOut=a{1}(3);
         qsIn=a{1}(4);
         zDown=a{1}(9);
+        %zDown=1000;
         
         if i<=123
             ndt=ndt+1;
@@ -68,6 +69,7 @@ while ~feof(f1_id)
                     d_in_m=31;
                 case 4     %2ÔÂ
                     d_in_m=DaysFeburary(year+1);
+                    %d_in_m=28;
                 case 5     %3ÔÂ
                     d_in_m=31;
                 case 6     %4ÔÂ
