@@ -22,7 +22,7 @@ function varargout = RiverGeoAnalysis(varargin)
 
 % Edit the above text to modify the response to help RiverGeoAnalysis
 
-% Last Modified by GUIDE v2.5 30-Mar-2017 18:40:51
+% Last Modified by GUIDE v2.5 11-May-2019 17:38:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -106,3 +106,13 @@ function topo_design_button_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 close('RiverGeoAnalysis');
+
+
+% --- Executes on button press in pushbutton5.
+function createTopo_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+tvar = uigetvariables({'Please select the variable for location (km)','the variable for width','the variable for bed elevation'});
+CS=create1Dtopo(tvar{1},tvar{2},tvar{3});
+writeCS(CS,3);
