@@ -76,4 +76,6 @@ file_id=fopen('CS_xyz.txt', 'w');
      trisurf(tri,data_xy(:,1),data_xy(:,2),data_val);
  end
  
+ save([path, 'CS.mat']);
+ 
     
