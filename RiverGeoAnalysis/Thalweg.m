@@ -53,7 +53,14 @@ function Thalweg_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to Thalweg (see VARARGIN)
 
 %------------------------------my codes start---------------------
-[dist,zbed]=extract_thalweg;          
+prompt = {'Row number for the input of npt'};      %npt is the number of sampling point at a cross-section
+dlgtitle = 'Input';
+dims = 1;
+definput = {'3'};
+answer = inputdlg(prompt,dlgtitle,dims,definput);
+row_npt=str2num(answer{1});
+
+[dist,zbed]=extract_thalweg(row_npt);          
 plot(handles.axes1,dist,zbed);             %set the current axes, important in multi window design!!!!!
 %------------------------------my codes end----------------------
 

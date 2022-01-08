@@ -5,7 +5,7 @@ if nargin==0
     row_npt=3;       %每一块断面数据内部，断面点个数所在的行
 end
 
-button=questdlg('请地形文件','Guide','Yes');
+button=questdlg('请选择地形文件（可多选）','Guide','Yes');
 if ~strcmp(button,'Yes')
     return;
 end

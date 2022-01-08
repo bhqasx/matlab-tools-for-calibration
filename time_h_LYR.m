@@ -1,6 +1,8 @@
 function hours = time_h_LYR(varargin)
 %UNTITLED2 Summary of this function goes here
-%   the year is 1962 by default
+% the input format can be the same as the raw data pasted (as string array) from excel or
+% preprocessed numerical array
+%attention: there should not be any empty value in the first row!
 
 start_h=input('input starting hour:');
 year=input('input the year:');
@@ -10,13 +12,43 @@ numdate=zeros(rows,1);
 %---------------------------------------------------------------
 if nargin==1
     vv=varargin{1};
-    if size(vv,2)~=4
-        disp('need an array with 4 colums if there is only one input parameter');
-        hours=0;
-        return;
-    else       
+    if isstring(vv)        %if the input is raw data pasted (as string array) from excel
         for i=1:1:rows
-            numdate(i)=datenum(year,vv(i,1),vv(i,2),vv(i,3),vv(i,4),0);
+            if isempty(vv{i,1})
+                m=m_last;
+            else
+                m=str2num(vv{i,1});
+            end
+            
+            if isempty(vv{i,2})
+                d=d_last;
+            else
+                d=str2num(vv{i,2});
+            end
+            
+            newstr=split(vv{i,3}, ':');
+            if size(newstr,1)>1
+                hh=str2num(newstr{1,1});
+                mm=str2num(newstr{2,1});
+            else
+                hh=str2num(newstr{1,1});
+                mm=0;
+            end
+            
+            m_last=m;
+            d_last=d;
+            
+            numdate(i)=datenum(year,m,d,hh,mm,0);
+        end        
+    else
+        if size(vv,2)~=4
+            disp('need an array with 4 colums if there is only one input parameter');
+            hours=0;
+            return;
+        else       
+            for i=1:1:rows
+                numdate(i)=datenum(year,vv(i,1),vv(i,2),vv(i,3),vv(i,4),0);
+            end
         end
     end
 end
