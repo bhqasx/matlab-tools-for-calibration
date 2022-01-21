@@ -38,7 +38,11 @@ if nargin==1
             m_last=m;
             d_last=d;
             
-            numdate(i)=datenum(year,m,d,hh,mm,0);
+            try
+                numdate(i)=datenum(year,m,d,hh,mm,0);
+            catch
+                warning(['error when reading row ', num2str(i)]);
+            end
         end        
     else
         if size(vv,2)~=4
