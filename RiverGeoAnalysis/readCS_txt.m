@@ -30,6 +30,11 @@ if file_id>=3
     for i=1:1:ncs
         for nl=1:1:nSectionHead
             tline=fgetl(file_id);
+            if feof(file_id)||isempty(tline)
+                disp('check the number of CS');
+                return
+            end
+            
             if nl==1
                 a=textscan(tline,'%s');
                 CS_array(i).name=a{1};
@@ -53,7 +58,11 @@ if file_id>=3
             a=textscan(tline,'%f');
             CS_array(i).x(j)=a{1}(2);
             CS_array(i).zb(j)=a{1}(3);
-            CS_array(i).kchfp(j)=a{1}(4);
+            try
+                CS_array(i).kchfp(j)=a{1}(4);
+            catch
+                warn_txt='no data for kchfp field';
+            end
         end
         CS_array(i).zbmin=min(CS_array(i).zb);  %lowest level of a cross-section
     end
