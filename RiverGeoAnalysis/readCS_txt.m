@@ -4,7 +4,13 @@ function [ncs,CS_array]=readCS_txt(fpath,iline_npt,iline_xy1,iline_xy2)
 %cross-section is located
 
 nSectionHead=4;      %number of lines in the head of each CS data block
-if nargin==1
+if nargin==0
+    [filename,path,FilterIndex]=uigetfile('*.*');
+    fpath=[path,filename];
+    iline_npt=3;
+    iline_xy1=0;
+    iline_xy2=0;    
+elseif nargin==1
     iline_npt=3;
     iline_xy1=0;
     iline_xy2=0;
