@@ -1,23 +1,49 @@
-function [ncs,CS_array]=readCS_txt(fpath,iline_npt,iline_xy1,iline_xy2)
+function [ncs,CS_array]=readCS_txt(varargin)
 %从txt文件中读入断面数据
 %iline_npt: number of the line where the number of points at a
 %cross-section is located
 
-nSectionHead=4;      %number of lines in the head of each CS data block
-if nargin==0
+default_fpath='';
+default_iline_npt=3;
+default_iline_xy1=0;
+default_iline_xy2=0;
+default_nSectionHead=4;
+default_nCol=4;
+
+p=inputParser;
+addOptional(p,'fpath',default_fpath);
+addParameter(p,'iline_npt',default_iline_npt);
+addParameter(p,'iline_xy1',default_iline_xy1); 
+addParameter(p,'iline_xy2',default_iline_xy2); 
+addParameter(p,'nSectionHead',default_nSectionHead); 
+addParameter(p,'nCol',default_nCol); 
+
+parse(p,varargin{:});
+fpath=p.Results.fpath;
+if isempty(fpath)
     [filename,path,FilterIndex]=uigetfile('*.*');
-    fpath=[path,filename];
-    iline_npt=3;
-    iline_xy1=0;
-    iline_xy2=0;    
-elseif nargin==1
-    iline_npt=3;
-    iline_xy1=0;
-    iline_xy2=0;
-elseif nargin==2
-    iline_xy1=0;
-    iline_xy2=0;    
+    fpath=[path,filename];    
 end
+iline_npt=p.Results.iline_npt;
+iline_xy1=p.Results.iline_xy1;
+iline_xy2=p.Results.iline_xy2;
+nSectionHead=p.Results.nSectionHead;
+nCol=p.Results.nCol;
+
+% if nargin==0
+%     [filename,path,FilterIndex]=uigetfile('*.*');
+%     fpath=[path,filename];
+%     iline_npt=3;
+%     iline_xy1=0;
+%     iline_xy2=0;
+% elseif nargin==1
+%     iline_npt=3;
+%     iline_xy1=0;
+%     iline_xy2=0;
+% elseif nargin==2
+%     iline_xy1=0;
+%     iline_xy2=0;
+% end
 
 file_id=fopen(fpath);
 if file_id>=3
@@ -62,10 +88,10 @@ if file_id>=3
         for j=1:1:CS_array(i).npt
             tline=fgetl(file_id);
             a=textscan(tline,'%f');
-            CS_array(i).x(j)=a{1}(2);
-            CS_array(i).zb(j)=a{1}(3);
+            CS_array(i).x(j)=a{1}(nCol-2);
+            CS_array(i).zb(j)=a{1}(nCol-1);
             try
-                CS_array(i).kchfp(j)=a{1}(4);
+                CS_array(i).kchfp(j)=a{1}(nCol);
             catch
                 warn_txt='no data for kchfp field';
             end
