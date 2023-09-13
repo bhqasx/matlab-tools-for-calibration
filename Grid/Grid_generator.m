@@ -1,8 +1,8 @@
 %生成用于Fortran程序的一维网格
 
 %---------------input parameters--------------
-M=100;        %number of cells
-L=50;           %channel length, unit: m
+M=320;        %number of cells
+L=32;           %channel length, unit: m
 base=100;         %base bed level
 npt=5;          %number of points at each cross-section
 width=1;           %channel width
