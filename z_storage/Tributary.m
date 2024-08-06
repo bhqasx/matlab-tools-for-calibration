@@ -1,6 +1,7 @@
 classdef Tributary
     properties
         numcs
+        Nocs      %距离该支流口门最近的干流断面号
         Dtodam
         minzb
         CsDist

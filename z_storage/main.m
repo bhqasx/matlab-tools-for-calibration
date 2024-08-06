@@ -12,7 +12,7 @@ fgetl(fid);  % Skip the first line
 for K = 1:NumTBY
     fgetl(fid); fgetl(fid);
     data = textscan(fgetl(fid), '%d %d %d %f');
-    K1 = data{1}; tby(K).numcs = data{2}; Nocs = data{3}; tby(K).Dtodam = data{4};
+    K1 = data{1}; tby(K).numcs = data{2}; tby(K).Nocs = data{3}; tby(K).Dtodam = data{4};
     fgetl(fid);
     
     tby(K).tbycs = TributaryCS.empty(tby(K).numcs, 0);
@@ -23,7 +23,8 @@ for K = 1:NumTBY
         numnd = 0;
         for row = 1:4
             if row == 4
-                numnd = fscanf(fid, '%d', 1);
+                numnd = textscan(fgetl(fid), '%d');
+                numnd = numnd{1};
             else
                 fgetl(fid);
             end
@@ -110,8 +111,17 @@ end
 
 % 保存数据到Excel文件中，其中每个sheet对应一个支流
 filename = 'LevelStorage.xlsx';
+if exist(filename, 'file')
+    delete(filename);
+end
+
 for K = 1:NumTBY
     sheetname = sprintf('Tributary%d', K);
     T = table(tby(K).zw', tby(K).storage', tby(K).AreaSf', 'VariableNames', {'WaterLevel', 'Storage', 'SurfaceArea'});
-    writetable(T, filename, 'Sheet', sheetname);
+    extraInfo = table({'numcs'; 'Nocs'; 'Dtodam'}, [tby(K).numcs; tby(K).Nocs; tby(K).Dtodam], 'VariableNames', {'Parameter', 'Value'});
+    
+    % Write extraInfo at the top of each sheet
+    writetable(extraInfo, filename, 'Sheet', sheetname, 'Range', 'A1');
+    % Write T below extraInfo
+    writetable(T, filename, 'Sheet', sheetname, 'Range', 'A5');
 end
