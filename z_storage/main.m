@@ -118,8 +118,8 @@ end
 for K = 1:NumTBY
     sheetname = sprintf('Tributary%d', K);
     T = table(tby(K).zw', tby(K).storage', tby(K).AreaSf', 'VariableNames', {'WaterLevel', 'Storage', 'SurfaceArea'});
-    extraInfo = table({'numcs'; 'Nocs'; 'Dtodam'}, [tby(K).numcs; tby(K).Nocs; tby(K).Dtodam], 'VariableNames', {'Parameter', 'Value'});
-    
+    extraInfo = table([tby(K).numcs], [tby(K).Nocs], [tby(K).minzb], 'VariableNames', {'numcs', 'Nocs', 'zb_entrance'}); 
+
     % Write extraInfo at the top of each sheet
     writetable(extraInfo, filename, 'Sheet', sheetname, 'Range', 'A1');
     % Write T below extraInfo
