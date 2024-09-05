@@ -5,6 +5,9 @@ clc;
 NumTBY = input('Input the number of tributary: ');
 tby = Tributary.empty(NumTBY, 0);
 
+row_npt = input("Input the line number of points at a cross section: ");
+ncol=input("Input the number of columns: ");
+
 Fullnam = 'TBCSPf.dat';
 fid = fopen(Fullnam, 'r');
 fgetl(fid);  % Skip the first line
@@ -22,7 +25,7 @@ for K = 1:NumTBY
     for I = 1:tby(K).numcs
         numnd = 0;
         for row = 1:4
-            if row == 4
+            if row == row_npt
                 numnd = textscan(fgetl(fid), '%d');
                 numnd = numnd{1};
             else
@@ -38,18 +41,31 @@ for K = 1:NumTBY
         tby(K).tbycs(I).dbij = zeros(1, numnd-1);
         
         for J = 1:numnd
-            data = textscan(fgetl(fid), '%f %f %f');
-            tby(K).tbycs(I).XXIJ(J) = data{1};
-            tby(K).tbycs(I).ZBIJ(J) = data{2};
-            tby(K).tbycs(I).KNIJ(J) = data{3};
+            if ncol==3
+                data = textscan(fgetl(fid), '%f %f %f');
+
+                tby(K).tbycs(I).XXIJ(J) = data{1};
+                tby(K).tbycs(I).ZBIJ(J) = data{2};
+                tby(K).tbycs(I).KNIJ(J) = data{3};
+            elseif ncol==4
+                data = textscan(fgetl(fid), '%d %f %f %f');
+
+                tby(K).tbycs(I).XXIJ(J) = data{2};
+                tby(K).tbycs(I).ZBIJ(J) = data{3};
+                tby(K).tbycs(I).KNIJ(J) = data{4};
+            else
+                disp("invalid ncol");
+                pause;                
+            end
         end
     end
     
     fgetl(fid);  % Skip 'Specification' line
     for I = 1:tby(K).numcs
-        data = textscan(fgetl(fid), '%d %f');
-        IX = data{1}; tby(K).CsDist(I) = data{2};
-        tby(K).tbycs(I).dist = tby(K).CsDist(I);
+            line=fgetl(fid);
+            data = textscan(line, '%d %f %s');
+            IX = data{1}; tby(K).CsDist(I) = data{2};
+            tby(K).tbycs(I).dist = tby(K).CsDist(I);
     end
 end
 
