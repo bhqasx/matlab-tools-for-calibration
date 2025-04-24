@@ -16,7 +16,7 @@ if nargin==0
     
     prompt={'iline_npt','iline_xy1', 'iline_xy2'};
     user_in=inputdlg(prompt);
-    [ncs,CSold]=readCS_txt([path,filename], str2num(user_in{1}), str2num(user_in{2}), str2num(user_in{3}));
+    [ncs,CSold]=readCS_txt('fpath', [path,filename], 'iline_npt', str2num(user_in{1}), 'iline_xy1', str2num(user_in{2}), 'iline_xy2', str2num(user_in{3}));
 end   
 
 for ii=1:1:ncs
