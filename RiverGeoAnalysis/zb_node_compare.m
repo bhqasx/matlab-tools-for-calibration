@@ -348,6 +348,10 @@ function Add_Water_Level_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 handles.draw_wl=1;
-S=uiimport;
-handles.wl=S.wl;
+[filename,path,FilterIndex]=uigetfile('*.*');
+[pathstr,name,ext] = fileparts(filename);
+if strcmp(ext,'.mat')
+    load([path,filename],'MaxWL');
+end
+handles.wl=MaxWL;
 guidata(hObject, handles); 

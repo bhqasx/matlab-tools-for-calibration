@@ -24,41 +24,12 @@ if strcmp(ext,'.mat')
     end
     CS=rmfield(CS,'zb');
 else    
-    file_id=fopen([path,filename]);
-    
-    tline=fgetl(file_id);
-    tline=fgetl(file_id);
-    a=textscan(tline,'%s%f');
-    ncs=a{2}(1);          %get the number of cross-sections
-    
-    b=cell(1,ncs);
-    CS=struct('npt',b,'x',b,'zb0',b,'zbk',b);       %creat a struct array
-    tline=fgetl(file_id);
+    [ncs,CS]=readCS_txt('fpath', [path, filename]);
     for i=1:1:ncs
-        tline=fgetl(file_id);
-        a=textscan(tline,'%d');
-        tmp=a{1}(1);
-        CS(i).npt=tmp;
-        CS(i).x=zeros(tmp,1);
-        CS(i).zb0=zeros(tmp,1);
-        CS(i).zbk=zeros(tmp,1);
+        CS(i).zb0=CS(i).zb;
+        CS(i).zbk=CS(i).zb;
     end
-    tline=fgetl(file_id);
-    tline=fgetl(file_id);
-    tline=fgetl(file_id);
-    for i=1:1:ncs
-        tline=fgetl(file_id);
-        tline=fgetl(file_id);
-        for j=1:1:CS(i).npt
-            tline=fgetl(file_id);
-            a=textscan(tline,'%f');
-            CS(i).x(j)=a{1}(3);          %read distance of a measuring point at a CS
-            CS(i).zb0(j)=a{1}(4);
-            CS(i).zbk(j)=a{1}(5);
-        end
-    end
-    
-    fclose(file_id);
+    CS=rmfield(CS,'zb');
 end
 
 set(handles.slider1,'Min',1);          %set slider initial starte

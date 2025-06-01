@@ -22,7 +22,7 @@ function varargout = RiverGeoAnalysis(varargin)
 
 % Edit the above text to modify the response to help RiverGeoAnalysis
 
-% Last Modified by GUIDE v2.5 11-May-2019 17:38:28
+% Last Modified by GUIDE v2.5 01-Jun-2025 10:49:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -95,7 +95,7 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% »­ÈýÎ¬µØÐÎ
+% ç”»ä¸‰ç»´åœ°å½¢
 close('RiverGeoAnalysis');
 CS=CS_to_AbsCoordi;
 
